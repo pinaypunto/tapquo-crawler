@@ -139,9 +139,7 @@ _getUrlParameter = (url, param) ->
 
 
 crawler = new FVF()
-crawler.start()
-module.exports = -> @
-
+module.exports = -> crawler.start()
 
 
 

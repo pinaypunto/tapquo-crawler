@@ -2,6 +2,7 @@ ResultModel = require "./models/result"
 BaseCrawler = require "../../common/base"
 
 
+
 class CNET extends BaseCrawler
 
   name        : "CNet"
@@ -29,5 +30,4 @@ class CNET extends BaseCrawler
 
 
 crawler = new CNET()
-console.log crawler.is_working
-module.exports = -> crawler.start()
+module.exports = crawler.start

@@ -2,34 +2,55 @@ BaseCrawler   = require "../../common/base"
 Hope          = require "hope"
 ResultModel   = require "./models/result"
 
+SEARCH_KEYWORDS = ["tapquo", "quojs", "monocle", "coffeescript", "ajax"]
 SEARCH_KEYWORDS = ["tapquo"]
 
 
 class Reddit extends BaseCrawler
+
   name      : "Reddit tapquo"
+
+  authorization:
+    uri         : "https://ssl.reddit.com/api/login/xxxxxxxxxxxx"
+    method      : "POST"
+    form        :
+      op        : "login"
+      user      : "xxxxxxxxxxxx"
+      passwd    : "yyyyyyyyyyyyyy"
+      api_type  : "json"
+
   startUrls : do ->
-    urls = ("http://es.reddit.com/search?q=#{kw}" for kw in SEARCH_KEYWORDS)
-    urls
+    ("http://es.reddit.com/search?q=#{keyword}" for keyword in SEARCH_KEYWORDS)
 
-  parse: (response, request, $) =>
+  parse: (error, response, $) =>
     $("#siteTable a.title").each (i, element) =>
-      @queue element.href, @parseContent
+      if _validLink element.href
+        @queue element.href, @parseContent
+      else
+        @addResult
+          title       : element.innerText
+          description : ""
+          url         : element.href
 
-  parseContent: (response, request, $) =>
-    @addResult
-      title       : $("#siteTable a.title").text()
-      description : $("#siteTable div.md").text()
-      url         : request.uri
+  parseContent: (error, response, $) =>
+    if response
+      @addResult
+        url         : response.uri
+        title       : $("#siteTable a.title").text()
+        description : $("#siteTable div.md").text()
 
   onFinish: (results) ->
     saveTasks = (_prepareSave(result) for result in results)
     Hope.join(saveTasks).then (error, result) ->
       console.log "Results saved!", error, result
 
+_validLink = (uri) ->
+  uri.slice(-1) is "/" and uri.substring(0, 21) is "http://es.reddit.com/"
+
+
 _prepareSave = (result) -> ->
   ResultModel.register(result)
 
 
 crawler = new Reddit()
-crawler.start()
-module.exports = -> @
+module.exports = -> crawler.start()

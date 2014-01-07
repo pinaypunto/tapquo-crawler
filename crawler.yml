@@ -2,11 +2,11 @@ environment: development
 
 tasks:
 
-    - name      : As quinielas
-      # schedule  : "00 00 00 * * *"
-      schedule  : "*/5 * * * * *"
-      file      : quinielas/init
-      timezone  : Europe/Madrid
+    # - name      : As quinielas
+    #   # schedule  : "00 00 00 * * *"
+    #   schedule  : "*/5 * * * * *"
+    #   file      : quinielas/init
+    #   timezone  : Europe/Madrid
 
     # - name      : News CNET (recursive)
     #   schedule  : "00 05 00 * * *"
@@ -14,7 +14,8 @@ tasks:
     #   timezone  : Europe/Madrid
 
     # - name      : FVF
-    #   schedule  : "00 10 00 * * *"
+    #   # schedule  : "00 10 00 * * *"
+    #   schedule  : "*/5 * * * * *"
     #   file      : fvf/init
     #   timezone  : Europe/Madrid
 
@@ -23,7 +24,8 @@ tasks:
     #   file      : fuel/init
     #   timezone  : Europe/Madrid
 
-    # - name      : Reddit
-    #   schedule  : "00 40 00 * * *"
-    #   file      : reddit/init
-    #   timezone  : Europe/Madrid
+    - name      : Reddit
+      schedule  : "*/5 * * * * *"
+      schedule  : "00 40 00 * * *"
+      file      : reddit/init
+      timezone  : Europe/Madrid

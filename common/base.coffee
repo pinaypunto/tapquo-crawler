@@ -5,9 +5,9 @@ require("colors")
 
 Logger =
 
-  ok: (type, msg, add_rainbow=false) ->
-    if add_rainbow
-      console.log "\n====================================================".rainbow
+  rainbow: -> console.log "\n====================================================".rainbow
+
+  ok: (type, msg) ->
     console.log ("[#{type.toUpperCase()}]".green + " :: " + msg).bold
 
   log: (msg) ->
@@ -15,6 +15,7 @@ Logger =
 
   error: (msg) ->
     console.log ("[ERROR]".red + " :: " + msg).bold
+
 
 
 class BaseCrawler
@@ -27,34 +28,33 @@ class BaseCrawler
   # Starts crawling
   start: ->
     unless @is_working
-      Logger.ok("start", @name, true)
+      Logger.rainbow()
+      Logger.ok "start", @name
       do @_initialize
-      @crawler = new Crawler
-        maxConnections  : 10
-        skipDuplicates  : true
-        forceUTF8       : true
-        callback        : @_parse
-        onDrain         : @_onFinish
-
-      if @authorization then @_authorization().then(@_crawl)
+      if @authorization
+        @_authorization().then (error, result) => do @_crawl
       else do @_crawl
-
     else Logger.error "Crawler is allready running"
 
   # Pushes a result object to @results
   addResult: (result) ->
     @results.push result
 
+  # Adds an url to crawl only if it hasn't been parsed (or adds queue object)
   queue: (data, callback=null) ->
-    if typeof data is "string"
-      data = uri: data, jQuery: true, callback: callback
-    data.callback = data.callback or @_parse
-    @_queuedUrls = @_queuedUrls or []
-    if @_queuedUrls.indexOf(data.uri) is -1
-      Logger.log "URL to scrap :: ", data.uri
-      @_queuedUrls.push data.uri
-      if @headers then data.headers = @headers
-      @crawler.queue data
+    try
+      if typeof data is "string"
+        data = uri: data, jQuery: true, callback: callback
+      data.callback = data.callback or @_parse
+      data.headers = {}
+      @_queuedUrls = @_queuedUrls or []
+      if @_queuedUrls.indexOf(data.uri) is -1
+        Logger.log "URL to scrap :: " + data.uri
+        @_queuedUrls.push data.uri
+        if @headers then data.headers = @headers
+        @crawler.queue data
+    catch e
+      Logger.error e.toString()
 
   # Initializes all related vars
   _initialize: ->
@@ -72,35 +72,34 @@ class BaseCrawler
     else "onFinish function must be created to get results..."
 
   # Default parse method for startUrls
-  _parse: (error, request, $) =>
-    Logger.log "Parse URL " + request.uri + $("head title").text()
-    if @parse then @parse.call @, error, request, $
+  _parse: (error, response, $) =>
+    Logger.log "Parsing [" + response.uri + "]"
+    if @parse then @parse.call @, error, response, $
 
-  # Queues start urls to crawler
+  # Creates the crawler and queues to it start urls
   _crawl: ->
+    @crawler = new Crawler
+      maxConnections  : 10
+      skipDuplicates  : true
+      forceUTF8       : true
+      callback        : @_parse
+      onDrain         : @_onFinish
+
     Logger.log "Start URLS " + @startUrls.join("; ")
     @crawler.queue @startUrls
 
   # Makes an authorization request to get the headers or set them by a custom callback
-  _authorization: =>
+  _authorization: ->
     promise = new Hope.Promise()
-    crawler_data =
-      maxConnections  : 1
-      onDrain         : ->
-        Logger.ok "auth", "Authorization finished"
-        do promise.done
-
-    queue_data =
-      uri       : @authorization.url
+    auth = new Crawler {maxConnections: 1}
+    auth.queue
+      uri       : @authorization.uri
       method    : @authorization.method
       form      : @authorization.form
       jQuery    : false
-
-    queue_data.callback = @authorization.callback or (request, response, $) =>
-      @headers = response.headers
-
-    authorization = new Crawler(crawler_data)
-    authorization.queue(queue_data)
+      callback  : @authorization.callback or (error, response) =>
+        @headers.cookie = response.headers['set-cookie'] or response.headers['Set-Cookie']
+        promise.done error, response
     return promise
 
 
