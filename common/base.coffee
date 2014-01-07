@@ -37,6 +37,7 @@ class BaseCrawler
     if @_queuedUrls.indexOf(data.uri) is -1
       console.log "URL to scrap :: ", data.uri
       @_queuedUrls.push data.uri
+      if @headers then data.headers = @headers
       @crawler.queue data
 
   _initialize: ->
