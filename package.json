@@ -1,0 +1,20 @@
+{
+  "name"            : "node_crawler",
+  "version"         : "0.0.01",
+  "description"     : "Easy (but powerful) nodeJS crawler",
+  "homepage"        : "http://",
+  "author"          : "Ignacio Olalde <ina@tapquo.com>",
+  "dependencies"    : {
+    "coffee-script" : "*",
+    "crawler"       : "*",
+    "hope"          : "*",
+    "mongoose"      : "*",
+    "time"          : "*",
+    "js-yaml"       : "*",
+    "cron"          : "*"
+  },
+  "scripts"         : {
+    "start"         : "node index.js"
+  },
+  "engines"         : { "node": "*"}
+}
