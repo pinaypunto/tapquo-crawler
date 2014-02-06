@@ -11,12 +11,12 @@ class Reddit extends BaseCrawler
   name      : "Reddit tapquo"
 
   authorization:
-    uri         : "https://ssl.reddit.com/api/login/xxxxxxxxxxxx"
+    uri         : "https://ssl.reddit.com/api/login/soyjavi"
     method      : "POST"
     form        :
       op        : "login"
-      user      : "xxxxxxxxxxxx"
-      passwd    : "yyyyyyyyyyyyyy"
+      user      : "soyjavi"
+      passwd    : "clio21blanco"
       api_type  : "json"
 
   startUrls : do ->
@@ -53,4 +53,5 @@ _prepareSave = (result) -> ->
 
 
 crawler = new Reddit()
+crawler.start()
 module.exports = -> crawler.start()

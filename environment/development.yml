@@ -1,36 +1,43 @@
 mongo:
 
-    - name    : quinielas
-      host    : 192.168.1.200
-      port    : 27017
-      db      : quinielas
-      user    : crawleruser
-      password: tapquopassword
+    # - name    : quinielas
+    #   host    : 192.168.1.200
+    #   port    : 27017
+    #   db      : quinielas
+    #   user    : crawleruser
+    #   password: tapquopassword
 
-    - name    : cnet
-      host    : 192.168.1.200
-      port    : 27017
-      db      : cnet
-      user    : crawleruser
-      password: tapquopassword
+    # - name    : cnet
+    #   host    : 192.168.1.200
+    #   port    : 27017
+    #   db      : cnet
+    #   user    : crawleruser
+    #   password: tapquopassword
 
-    - name    : fuel
-      host    : 192.168.1.200
-      port    : 27017
-      db      : fuel
-      user    : fueladmin
-      password: tapquopassword
+    # - name    : fuel
+    #   host    : 192.168.1.200
+    #   port    : 27017
+    #   db      : fuel
+    #   user    : fueladmin
+    #   password: tapquopassword
 
-    - name    : fvf
-      host    : 192.168.1.200
-      port    : 27017
-      db      : fvf
-      user    : fvfuser
-      password: tapquopassword
+    # - name    : fvf
+    #   host    : 192.168.1.200
+    #   port    : 27017
+    #   db      : fvf
+    #   user    : fvfuser
+    #   password: tapquopassword
 
-    - name    : reddit
+    # - name    : reddit
+    #   host    : 192.168.1.200
+    #   port    : 27017
+    #   db      : reddit
+    #   user    : redditadmin
+    #   password: tapquopassword
+
+    - name    : milanuncios
       host    : 192.168.1.200
       port    : 27017
-      db      : reddit
-      user    : redditadmin
-      password: tapquopassword
+      db      : milanuncios
+      user    : milanunciosadmin
+      password: milanunciosadmin

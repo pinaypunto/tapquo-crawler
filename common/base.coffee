@@ -37,8 +37,8 @@ class BaseCrawler
     else Logger.error "Crawler is allready running"
 
   # Pushes a result object to @results
-  addResult: (result) ->
-    @results.push result
+  # addResult: (result) ->
+  #   @results.push result
 
   # Adds an url to crawl only if it hasn't been parsed (or adds queue object)
   queue: (data, callback=null) ->
@@ -46,7 +46,7 @@ class BaseCrawler
       if typeof data is "string"
         data = uri: data, jQuery: true, callback: callback
       data.callback = data.callback or @_parse
-      data.headers = {}
+      # data.headers = {}
       @_queuedUrls = @_queuedUrls or []
       if @_queuedUrls.indexOf(data.uri) is -1
         Logger.log "URL to scrap :: " + data.uri
@@ -60,7 +60,7 @@ class BaseCrawler
   _initialize: ->
     @_queuedUrls  = []
     @is_working   = true
-    @results      = []
+    # @results      = []
     @headers      = {}
     @crawler      = null
 
@@ -68,18 +68,21 @@ class BaseCrawler
   _onFinish: () =>
     Logger.ok "finish", "No more URLs to fetch"
     @is_working = false
-    if @onFinish then @onFinish.call @, @results
-    else "onFinish function must be created to get results..."
+    if @onFinish
+      @onFinish.call @
+      # @onFinish(@results)
+    else
+      Logger.error "onFinish function must be created to get results..."
 
   # Default parse method for startUrls
   _parse: (error, response, $) =>
-    Logger.log "Parsing [" + response.uri + "]"
+    # Logger.log "Parsing [" + response.uri + "]"
     if @parse then @parse.call @, error, response, $
 
   # Creates the crawler and queues to it start urls
   _crawl: ->
     @crawler = new Crawler
-      maxConnections  : 10
+      maxConnections  : 40
       skipDuplicates  : true
       forceUTF8       : true
       callback        : @_parse
@@ -93,10 +96,10 @@ class BaseCrawler
     promise = new Hope.Promise()
     auth = new Crawler {maxConnections: 1}
     auth.queue
+      jQuery    : false
       uri       : @authorization.uri
       method    : @authorization.method
       form      : @authorization.form
-      jQuery    : false
       callback  : @authorization.callback or (error, response) =>
         @headers.cookie = response.headers['set-cookie'] or response.headers['Set-Cookie']
         promise.done error, response

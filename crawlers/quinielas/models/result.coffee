@@ -27,4 +27,4 @@ SchemaDef.statics.register = (parameters) ->
   promise
 
 
-module.exports = db.model "Result", SchemaDef
+module.exports = db.model("Result", SchemaDef)
