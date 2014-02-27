@@ -31,37 +31,30 @@ class BaseCrawler
       Logger.rainbow()
       Logger.ok "start", @name
       do @_initialize
-      if @authorization
-        @_authorization().then (error, result) => do @_crawl
-      else do @_crawl
+      if @authorization then @_authorization().then (error, result) => do @_startCrawling
+      else do @_startCrawling
     else Logger.error "Crawler is allready running"
-
-  # Pushes a result object to @results
-  # addResult: (result) ->
-  #   @results.push result
 
   # Adds an url to crawl only if it hasn't been parsed (or adds queue object)
   queue: (data, callback=null) ->
-    try
-      if typeof data is "string"
-        data = uri: data, jQuery: true, callback: callback
-      data.callback = data.callback or @_parse
-      # data.headers = {}
-      @_queuedUrls = @_queuedUrls or []
-      if @_queuedUrls.indexOf(data.uri) is -1
-        Logger.log "URL to scrap :: " + data.uri
-        @_queuedUrls.push data.uri
-        if @headers then data.headers = @headers
-        @crawler.queue data
-    catch e
-      Logger.error e.toString()
+    if typeof data is "string"
+      data = uri: data, jQuery: true, callback: callback
+    data.callback = data.callback or @_parse
+    @_queuedUrls = @_queuedUrls or []
+    if @_queuedUrls.indexOf(data.uri) is -1
+      Logger.log "URL to scrap :: " + data.uri
+      @_queuedUrls.push data.uri
+      if @headers
+        console.log "Hay headers!!", @headers
+        data.headers = @headers
+      @crawler.queue data
+
 
   # Initializes all related vars
   _initialize: ->
     @_queuedUrls  = []
     @is_working   = true
-    # @results      = []
-    @headers      = {}
+    @headers      = @headers or {}
     @crawler      = null
 
   # Triggered when not more urls to fetch
@@ -70,17 +63,15 @@ class BaseCrawler
     @is_working = false
     if @onFinish
       @onFinish.call @
-      # @onFinish(@results)
     else
       Logger.error "onFinish function must be created to get results..."
 
   # Default parse method for startUrls
   _parse: (error, response, $) =>
-    # Logger.log "Parsing [" + response.uri + "]"
     if @parse then @parse.call @, error, response, $
 
   # Creates the crawler and queues to it start urls
-  _crawl: ->
+  _startCrawling: ->
     @crawler = new Crawler
       maxConnections  : 40
       skipDuplicates  : true
@@ -89,7 +80,11 @@ class BaseCrawler
       onDrain         : @_onFinish
 
     Logger.log "Start URLS " + @startUrls.join("; ")
-    @crawler.queue @startUrls
+    console.log @headers
+    @crawler.queue
+      uri: @startUrls[0]
+      headers: @headers
+      jQuery: true
 
   # Makes an authorization request to get the headers or set them by a custom callback
   _authorization: ->

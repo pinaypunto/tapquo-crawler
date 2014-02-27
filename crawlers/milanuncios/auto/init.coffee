@@ -11,7 +11,7 @@ FUEL_TYPES =
 
 
 CURRENT_PAGE = 1
-LAST_DATABASE_REFS = null
+LAST_DB_REFERENCES = null
 
 
 class MilAnunciosCars extends BaseCrawler
@@ -36,15 +36,14 @@ class MilAnunciosCars extends BaseCrawler
         renewed = item.find("[href='/creditos/auto-renueva.php']").length > 0
         unless renewed
           ref = _parseText(item.children(".x2").find(".x5")).substring(1)
-          if ref in LAST_DATABASE_REFS
+          if ref in LAST_DB_REFERENCES
             check_next_page = false
-            console.log "FOUND !!!!!"
             return
-
-          url = item.find(".cti").attr "href"
-          if url.substring(0, 1) is "/" then url = DOMAIN + url.substring(1)
-          else url = DOMAIN + BASE + url
-          @queue url, @parseCar
+          else
+            url = item.find(".cti").attr "href"
+            if url.substring(0, 1) is "/" then url = DOMAIN + url.substring(1)
+            else url = DOMAIN + BASE + url
+            @queue url, @parseCar
 
     # Next Page
     if check_next_page and has_next_page
@@ -102,7 +101,7 @@ class MilAnunciosCars extends BaseCrawler
     console.log "TOTAL results          :: ", results.length + @invalid_results
 
     ResultModel.saveAll(results).then (error, result) ->
-      console.log "All saved !!"
+      console.log "#{result.length} results saved !!"
       console.log "=========================================="
       console.log "\n\n"
 
@@ -112,13 +111,13 @@ crawler = new MilAnunciosCars()
 
 
 ResultModel.searchLastReferences().then (error, references) ->
-  LAST_DATABASE_REFS = references
+  LAST_DB_REFERENCES = references
   crawler.start()
 
 
 module.exports = ->
   ResultModel.searchLastReferences().then (error, references) ->
-    LAST_DATABASE_REFS = references
+    LAST_DB_REFERENCES = references
     crawler.start()
 
 

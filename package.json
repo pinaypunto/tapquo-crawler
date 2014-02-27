@@ -5,6 +5,8 @@
   "homepage"        : "http://",
   "author"          : "Ignacio Olalde <ina@tapquo.com>",
   "dependencies"    : {
+    "cheerio"       : "*",
+    "request"       : "*",
     "coffee-script" : "*",
     "crawler"       : "*",
     "colors"        : "*",

@@ -2,9 +2,14 @@ environment: development
 
 tasks:
 
-    - name      : Milanuncios
+    # - name      : Milanuncios
+    #   schedule  : "01 00 00 * * *"
+    #   file      : milanuncios/auto/init
+    #   timezone  : Europe/Madrid
+
+    - name      : SegundaMano.es
       schedule  : "01 00 00 * * *"
-      file      : milanuncios/auto/init
+      file      : segundamano/init
       timezone  : Europe/Madrid
 
     # - name      : As quinielas
